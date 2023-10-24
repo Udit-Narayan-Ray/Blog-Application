@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.blog.entities.User;
@@ -21,11 +22,15 @@ public class UserServiceImpl implements UserService {
 	private UserRepo userRepo;
 	
 	@Autowired
+	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
 	private ModelMapper modelMapper;
 	
 	@Override
 	public UserDTO createUser(UserDTO userDTO) {
 		
+		userDTO.setPassword(this.passwordEncoder.encode(userDTO.getPassword()));
 		User user =this.DTOtoUser(userDTO);
 
 		return this.UsertoDTO(this.userRepo.save(user));
@@ -35,6 +40,7 @@ public class UserServiceImpl implements UserService {
 	public UserDTO updateUser(UserDTO userDTO, Integer id) {
 		
 		User user=this.userRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","Id",id));
+		userDTO.setPassword(this.passwordEncoder.encode(userDTO.getPassword()));
 		user.setName(userDTO.getName());
 		user.setEmail(userDTO.getEmail());
 		user.setPassword(userDTO.getPassword());
