@@ -1,29 +1,20 @@
-package com.blog.entities;
+package com.blog.payloads;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+public class RoleDto {
 
-@Entity
-@Table(name = "roles")
-public class Role {
-	
-	@Id
 	private Integer roleId;
-	
+
 	private String role;
-	
-	public Role() {
+
+	public RoleDto() {
 		// TODO Auto-generated constructor stub
 	}
-	
 
-	public Role(Integer roleId, String role) {
+	public RoleDto(Integer roleId, String role) {
 		super();
 		this.roleId = roleId;
 		this.role = role;
 	}
-
 
 	public Integer getRoleId() {
 		return roleId;
@@ -41,10 +32,9 @@ public class Role {
 		this.role = role;
 	}
 
-
 	@Override
 	public String toString() {
-		return "Role [roleId=" + roleId + ", role=" + role + "]";
+		return "RoleDto [roleId=" + roleId + ", role=" + role + "]";
 	}
-		
+
 }

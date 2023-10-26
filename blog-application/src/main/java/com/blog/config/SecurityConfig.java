@@ -3,32 +3,67 @@ package com.blog.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)// prepost is enabled to enable pre-authorize for role specific access
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private CustomUserDetailService customUserDetailService;
 
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+	@Autowired
+	private JwtFilter jwtFilter;
+
+	
+	/*@Override
+    public void configure(WebSecurity web) throws Exception {
+        web
+          .ignoring()
+          .antMatchers(HttpMethod.POST,"/blog/logins/jwt");
+        //completely bypass the Spring Security Filter Chain.
+    }*/
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
 		http
 				// for disable cross site request forgery
 				.csrf().disable()
+				
+				//disable cors
+				.cors().disable()
 
 				// to authorized any HTTP request
-				.authorizeHttpRequests().anyRequest()
+				.authorizeHttpRequests()
+				
+				// set the URL which will have permit at first and after that every URL will be permitted
+				.antMatchers("/logins/jwt").permitAll()	
+				.antMatchers("/users/post").permitAll()
+				
+				// to authenticate user request with basic authentication
+				.anyRequest().authenticated() //.and().httpBasic()
 
-				// to authenticate user with basic authentication
-				.authenticated().and().httpBasic();
+				// configure for authentication entry point
+				.and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+
+				// making session STATELESS
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+		http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 	}
 
@@ -44,5 +79,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		return new BCryptPasswordEncoder();
 
+	}
+	
+	
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
 	}
 }

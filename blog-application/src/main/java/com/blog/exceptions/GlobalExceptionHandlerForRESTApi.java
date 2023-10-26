@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -66,12 +67,19 @@ public class GlobalExceptionHandlerForRESTApi {
 	@ExceptionHandler(FileNotFoundException.class)
 	public ResponseEntity<ApiResponse> fileNotFoundException()
 	{
-		return new ResponseEntity<ApiResponse>(new ApiResponse("File Not Found", false),HttpStatus.NOT_FOUND);
+		return new ResponseEntity<ApiResponse>(new ApiResponse("!! File Not Found !!", false),HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(IOException.class)
 	public ResponseEntity<ApiResponse> ioException()
 	{
-		return new ResponseEntity<ApiResponse>(new ApiResponse("Input Ouput Exception",false),HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ApiResponse>(new ApiResponse("!! Input Ouput Exception !!",false),HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler(UsernameNotFoundException.class)
+	public ResponseEntity<ApiResponse> usernameNotFound()
+	{
+		return new ResponseEntity<ApiResponse>(new ApiResponse("!! Invalid username or password !!", false),HttpStatus.BAD_REQUEST);
+	}
+
 }

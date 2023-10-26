@@ -1,10 +1,17 @@
 package com.blog.payloads;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+//this json ignore properties will stop the field to seen as json data
+@JsonIgnoreProperties(value = { "email","password"})
 public class UserDTO 
 {
 	private int id;
@@ -19,10 +26,13 @@ public class UserDTO
 	@NotEmpty
 	@Size(min = 3, max = 10,message = "!! Password should be between 3 to 10 characters !!")
 	@Pattern(regexp = "[a-zA-Z0-9]{3,}+",message = "!! Password should have atleast one capital,one small and one number in password !!")
+	
 	private String password;
 	
 	@NotEmpty
 	private String about;
+	
+	private Set<RoleDto> roles=new HashSet<>();
 	
 	public UserDTO() {
 		// TODO Auto-generated constructor stub
@@ -64,6 +74,13 @@ public class UserDTO
 	}
 	public void setAbout(String about) {
 		this.about = about;
+	}
+	
+	public Set<RoleDto> getRoles() {
+		return roles;
+	}
+	public void setRoles(Set<RoleDto> roles) {
+		this.roles = roles;
 	}
 	@Override
 	public String toString() {

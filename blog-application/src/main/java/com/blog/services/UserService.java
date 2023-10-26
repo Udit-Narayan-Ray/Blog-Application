@@ -11,6 +11,9 @@ public interface UserService {
 
 	//updating existed user
 	UserDTO updateUser(UserDTO userDTO, Integer id);
+	
+	//updating the user role
+	UserDTO updateRole(Integer id,Integer roleId);
 
 	//retrieving single user
 	UserDTO getUserById(Integer id);
